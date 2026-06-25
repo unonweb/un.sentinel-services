@@ -38,7 +38,7 @@ function main {
 	# COMPARE against the whitelist using 'comm'
 	# 'comm -13' suppresses lines unique to file1 (whitelist) and lines common to both.
 	# It outputs ONLY lines unique to file2 (currently running but not whitelisted).
-	local new_services=$(comm -13 "${WHITELIST}" <(echo "${current_services}"))
+	local new_services=$(comm -13 <(sort "${WHITELIST}") <(echo "${current_services}"))
 
 	# 3. If new services are found, send an email alert
 	if [ -n "${new_services}" ]; then
