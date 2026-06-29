@@ -65,20 +65,25 @@ function main {
 			continue
 		fi
 
-		alert_msg+="NEW SERVICE: ${service}\n"
+		alert_msg+="- ${service}\n"
 
 		# Log the alert to the cache with the current epoch timestamp
 		echo "$(date +%s)|${service}" >> "${CACHE_FILE}"
 	done
 
-	# If new services are found, send an email alert
+	# ALERT
+
+	if (( MAIL_ALERT )) && [[ -z "${MAIL_TO}" ]]; then
+		log "<3> Required var not set: MAIL_TO"
+	fi
+
 	if [[ -n "${alert_msg}" ]]; then
 
 		# ALERT
 		alert_msg_header+="DATE: $(date "+%Y-%m-%d %H:%M:%S")\n"
 		alert_msg_header+="HOSTNAME: ${HOSTNAME}\n\n"
 		
-		if ((SEND_MAIL_ALERT)); then
+		if (( MAIL_ALERT )); then
 			echo -e "${alert_msg_header}${alert_msg}" | \
 			mail -s "${MAIL_SUBJECT}" "${MAIL_TO}" 2>/dev/null
 		fi
