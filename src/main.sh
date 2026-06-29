@@ -40,8 +40,9 @@ function main {
 	# COMPARE against the whitelist using 'comm'
 	# 'comm -13' suppresses lines unique to file1 (whitelist) and lines common to both.
 	# It outputs ONLY lines unique to file2 (currently running but not whitelisted).
-	local new_services=($(comm -13 <(sort "${WHITELIST}") <(echo "${current_services}")))
-
+	local -a new_services
+	mapfile -t new_services < <(comm -13 <(sort "${WHITELIST}") <(echo "${current_services}"))
+	
 	# If new services are found, send an email alert
 	if [[ "${#new_services[@]}" -ne 0 ]]; then
 
@@ -53,8 +54,10 @@ function main {
 		msg+="------------\n"
 		msg+="${new_services}"
 		
-		echo -e "${msg}" | \
-		mail -s "${MAIL_SUBJECT}" "${MAIL_TO}" 2>/dev/null
+		if ((ALERT_MAIL)); then
+			echo -e "${msg}" | \
+			mail -s "${MAIL_SUBJECT}" "${MAIL_TO}" 2>/dev/null
+		fi
 	
 	fi
 }
