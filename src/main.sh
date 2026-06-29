@@ -73,7 +73,7 @@ function main {
 	done
 
 	# ALERT
-	alert "${alert_msg}
+	alert "${alert_msg}"
 }
 
 main
