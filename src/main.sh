@@ -26,9 +26,11 @@ function main {
 	fi
 
 	# Ensure the whitelist file exists on first run
-	if [ ! -f "${WHITELIST}" ]; then
+	if [[ ! -f "${WHITELIST}" ]]; then
 		echo "Error: Whitelist file not found: ${WHITELIST}"
 		exit 1
+	else
+		echo "Using whitelist: ${WHITELIST}"
 	fi
 
 	# SET current_services
@@ -38,10 +40,10 @@ function main {
 	# COMPARE against the whitelist using 'comm'
 	# 'comm -13' suppresses lines unique to file1 (whitelist) and lines common to both.
 	# It outputs ONLY lines unique to file2 (currently running but not whitelisted).
-	local new_services=$(comm -13 <(sort "${WHITELIST}") <(echo "${current_services}"))
+	local new_services=($(comm -13 <(sort "${WHITELIST}") <(echo "${current_services}")))
 
-	# 3. If new services are found, send an email alert
-	if [ -n "${new_services}" ]; then
+	# If new services are found, send an email alert
+	if [[ "${#new_services[@]}" -ne 0 ]]; then
 
 		# ALERT
 		local msg=""
@@ -52,9 +54,9 @@ function main {
 		msg+="${new_services}"
 		
 		echo -e "${msg}" | \
-		mail -s "${MAIL_SUBJECT}" "${MAIL_DST}" 2>/dev/null
+		mail -s "${MAIL_SUBJECT}" "${MAIL_TO}" 2>/dev/null
 	
 	fi
 }
 
-main ${@}
+main
