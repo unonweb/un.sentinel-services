@@ -81,7 +81,9 @@ function main {
 
 		# ALERT
 		alert_msg_header+="DATE: $(date "+%Y-%m-%d %H:%M:%S")\n"
-		alert_msg_header+="HOSTNAME: ${HOSTNAME}\n\n"
+		alert_msg_header+="HOSTNAME: ${HOSTNAME}\n"
+		alert_msg_header+="---\n\n"
+		alert_msg_header+="NEW SERVICES:\n"
 		
 		if (( MAIL_ALERT )); then
 			echo -e "${alert_msg_header}${alert_msg}" | \
